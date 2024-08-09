@@ -20,7 +20,8 @@ int main(){
 
     // Initialize array
     for(int i = 0; i < N; i++){
-        a[i] = 1.0f; b[i] = 2.0f;
+        a[i] = 1.0f * (i % 10); 
+        b[i] = 2.0f * (i % 10);
     }
 
     // Main function
@@ -32,6 +33,18 @@ int main(){
  
     std::cout << "elapsed time: " << elapsed_seconds.count() << "s"
               << std::endl;
+
+    std::cout << "a: ";
+    for (int i = 0; i < 10; ++i) std::cout << a[i] << ",";
+    std::cout << std::endl;
+
+    std::cout << "b: ";
+    for (int i = 0; i < 10; ++i) std::cout << b[i] << ",";
+    std::cout << std::endl;
+    
+    std::cout << "out: ";
+    for (int i = 0; i < 10; ++i) std::cout << out[i] << ",";
+    std::cout << std::endl;
 
     free(a);
     free(b);
