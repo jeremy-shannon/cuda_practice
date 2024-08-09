@@ -1,7 +1,7 @@
 #include <iostream>
 #include <chrono>
 
-#define N 1000000000
+#define N 1000
 
 void vector_add(float *out, float *a, float *b, int n) {
     for(int i = 0; i < n; i++){
