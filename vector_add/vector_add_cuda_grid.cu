@@ -1,16 +1,21 @@
 #include <iostream>
 #include <chrono>
 
-#define N 100000000
+#define N 1000000000
+
+using namespace std;
 
 __global__ void vector_add(float *out, float *a, float *b, int n) {
-    for(int i = 0; i < n; i++){
-        out[i] = a[i] + b[i];
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    // Handling arbitrary vector size
+    if (tid < n){
+        out[tid] = a[tid] + b[tid];
     }
 }
 
 int main(){
-    auto start = std::chrono::system_clock::now();
+    auto start = chrono::system_clock::now();
     float *a, *b, *out; 
     float *d_a, *d_b, *d_out; 
 
@@ -34,8 +39,13 @@ int main(){
     cudaMemcpy(d_a, a, sizeof(float) * N, cudaMemcpyHostToDevice);
     cudaMemcpy(d_b, b, sizeof(float) * N, cudaMemcpyHostToDevice);
 
-    // Main function
-    vector_add<<<1,1>>>(d_out, d_a, d_b, N);
+    // Executing kernel 
+    int block_size = 16*16;
+    int grid_size = ((N + block_size) / block_size);
+
+    cout << "block size: " << block_size << ", grid size: " << grid_size << endl;
+    
+    vector_add<<<grid_size,block_size>>>(d_out, d_a, d_b, N);
 
     cudaMemcpy(out, d_out, sizeof(float) * N, cudaMemcpyDeviceToHost);
 
@@ -44,24 +54,24 @@ int main(){
     cudaFree(d_b);
     cudaFree(d_out);
 
-    auto end = std::chrono::system_clock::now();
+    auto end = chrono::system_clock::now();
 
-    std::chrono::duration<double> elapsed_seconds = end-start;
+    chrono::duration<double> elapsed_seconds = end-start;
  
-    std::cout << "elapsed time: " << elapsed_seconds.count() << "s"
-              << std::endl;
+    cout << "elapsed time: " << elapsed_seconds.count() << "s"
+              << endl;
 
-    std::cout << "a: ";
-    for (int i = 0; i < 10; ++i) std::cout << a[i] << ",";
-    std::cout << std::endl;
+    cout << "a: ";
+    for (int i = 0; i < 10; ++i) cout << a[i] << ",";
+    cout << endl;
 
-    std::cout << "b: ";
-    for (int i = 0; i < 10; ++i) std::cout << b[i] << ",";
-    std::cout << std::endl;
+    cout << "b: ";
+    for (int i = 0; i < 10; ++i) cout << b[i] << ",";
+    cout << endl;
     
-    std::cout << "out: ";
-    for (int i = 0; i < 10; ++i) std::cout << out[i] << ",";
-    std::cout << std::endl;
+    cout << "out: ";
+    for (int i = 0; i < 10; ++i) cout << out[i] << ",";
+    cout << endl;
 
     free(a);
     free(b);
