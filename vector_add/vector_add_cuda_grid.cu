@@ -1,7 +1,7 @@
 #include <iostream>
 #include <chrono>
 
-#define N 1000000000
+#define N 100000000
 
 using namespace std;
 
@@ -40,12 +40,17 @@ int main(){
     cudaMemcpy(d_b, b, sizeof(float) * N, cudaMemcpyHostToDevice);
 
     // Executing kernel 
-    int block_size = 16*16;
+    int block_size = 16*16 * 8;
     int grid_size = ((N + block_size) / block_size);
 
     cout << "block size: " << block_size << ", grid size: " << grid_size << endl;
     
     vector_add<<<grid_size,block_size>>>(d_out, d_a, d_b, N);
+    
+    cudaError_t error = cudaGetLastError();
+    if (error != cudaSuccess) { 
+        cout << cudaGetErrorString(error) << endl;
+    }
 
     cudaMemcpy(out, d_out, sizeof(float) * N, cudaMemcpyDeviceToHost);
 
