@@ -1,6 +1,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <iostream>
+#include "cuda_test.cuh"
 
 using namespace cv;
 using namespace std;
@@ -27,6 +28,8 @@ int main(int argc, char** argv)
     imshow("window name", image); // (windowName, image); // Show our image inside the created window.
 
     cout << "here" << endl;
+
+    wrapper();
 
     waitKey(0); // Wait for any keystroke in the window
     //  destroyWindow(windowName); //destroy the created window
